@@ -9,6 +9,10 @@ with status beeing one of `[:ok :warning :error]`. The inner map can contain arb
 
 ## Usage
 
+Add `[de.otto/status "0.1.0"]` to your project dependencies. See example usage below.
+
+## Example
+
 To try this example, start a repl with
 
 ```$ lein repl```
