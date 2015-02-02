@@ -1,4 +1,4 @@
-(defproject status "0.1.0"
+(defproject de.otto/status "0.1.0"
   :description "A simple library to aggregate status."
   :url "https://github.com/otto-de/status"
   :license { :name "Apache License 2.0"
