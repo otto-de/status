@@ -24,7 +24,7 @@ and do something like this
 ;; you'll need some functions that return status in the given format.
 
 (def fun1 (fn [] {:component-id1 {:status :ok :message "all ok"}}))
-(def fun2 (fn [] {:component-id2 {:status :warn :message "a warning"}}))
+(def fun2 (fn [] {:component-id2 {:status :warning :message "a warning"}}))
 ```
 
 There is two aggretion strategies: strict and forgiving. The strict one will always aggregate to the worst status:
