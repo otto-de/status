@@ -36,21 +36,21 @@
              (s/aggregate-forgiving forgiving-msgs status-map))))))
 
 (deftest create-a-strict-aggregate-status
-  (testing "ok-if-all-ok"
+  (testing "ok if all ok"
     (let [status-map (merge (f-ok) (f-ok2))]
       (is (= {:status        :ok 
               :message       "all substatus ok"
               :statusDetails status-map}
              (s/aggregate-strictly strict-msgs status-map)))))
 
-  (testing "warn-if-any-warning"
+  (testing "warn if any warning"
     (let [status-map (merge (f-ok) (f-warn))]
       (is (= {:status        :warning 
               :message       "at least one substatus warn. no error"
               :statusDetails status-map}
              (s/aggregate-strictly strict-msgs status-map)))))
 
-  (testing "error-if-any-error"
+  (testing "error if any error"
     (let [status-map (merge (f-ok) (f-error) (f-warn))]
       (is (= {:status        :error 
               :message       "at least one substatus error"
@@ -58,22 +58,21 @@
              (s/aggregate-strictly strict-msgs status-map))))))
 
 (deftest create-an-aggregate-status-with-a-strategy
-  (testing "ok if all ok"
+  (testing "forgiving-strategy is forgiving and has predefined messages"
     (is (= {:id {:status        :ok
                  :message       "at least one ok"
-                 :statusDetails (merge (f-ok) (f-ok2))}}
-           (s/aggregate-status :id s/forgiving-strategy [f-ok f-ok2]))))
+                 :statusDetails (merge (f-ok) (f-warn))}}
+           (s/aggregate-status :id s/forgiving-strategy [f-ok f-warn]))))
+
+  (testing "strict-strategy is strict and has predefined messages"
+    (is (= {:id {:status        :warning
+                 :message       "some warnings"
+                 :statusDetails (merge (f-ok) (f-warn))}}
+           (s/aggregate-status :id s/strict-strategy [f-ok f-warn]))))
 
   (testing "it keeps extra info"
     (is (= {:id {:status        :ok
                  :message       "at least one ok"
                  :extra-key     "extra-value"
                  :statusDetails (f-ok)}}
-           (s/aggregate-status :id s/forgiving-strategy [f-ok] {:extra-key "extra-value"}))))
-
-  (testing "strict-strategy can have a warning message"
-    (is (= {:id 
-             {:status        :warning 
-              :message       "some warnings"
-              :statusDetails (merge (f-ok) (f-warn))}}
-           (s/aggregate-status :id s/strict-strategy [f-ok f-warn])))))
+           (s/aggregate-status :id s/forgiving-strategy [f-ok] {:extra-key "extra-value"})))))
