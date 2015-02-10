@@ -25,7 +25,7 @@
   (aggregate-forgiving {:ok "at least one ok" :error "none ok"} list))
 
 (defn strict-strategy [list]
-  (aggregate-strictly {:ok "all ok" :warnings "some warnings" :error "none ok"} list))
+  (aggregate-strictly {:ok "all ok" :warning "some warnings" :error "none ok"} list))
 
 (defn aggregate-status
   ([id strategy funs] (aggregate-status id strategy funs {}))

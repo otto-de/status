@@ -2,6 +2,9 @@
   (:require [clojure.test :refer :all]
             [de.otto.status :as s]))
 
+(def f-ok (fn [] {:ok-subcomponent {:status :ok :message "all ok"}}))
+(def f-warn (fn [] {:warn-subcomponent {:status :warning :message "a warning"}}))
+
 (def s-ok {:ok-subcomponent {:status :ok :message "all ok"}})
 (def s-ok2 {:ok-subcomponent2 {:status :ok :message "all ok"}})
 (def s-warn {:warn-subcomponent {:status :warning :message "a warning"}})
@@ -71,3 +74,11 @@
                             :warn-subcomponent  {:status :warning :message "a warning"}}}
            (s/aggregate-strictly
              strict-msgs (merge s-ok s-error s-warn))))))
+
+(deftest integrated-aggregate-status-with-strict-strategy
+  (testing "warn-if-any-warning"
+    (is (= {:id 
+             {:status        :warning :message "some warnings"
+              :statusDetails {:ok-subcomponent  {:status :ok :message "all ok"}
+                              :warn-subcomponent {:status :warning :message "a warning"}}}}
+           (s/aggregate-status :id s/strict-strategy [f-ok f-warn])))))
