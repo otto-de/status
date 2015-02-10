@@ -23,8 +23,11 @@ and do something like this
 
 ;; you'll need some functions that return status in the given format.
 
+;; either make the map yourself
 (def fun1 (fn [] {:component-id1 {:status :ok :message "all ok"}}))
-(def fun2 (fn [] {:component-id2 {:status :warning :message "a warning"}}))
+
+;; or use the factory function
+(def fun2 #(status-detail :component-id2 :warning "a warning"))
 ```
 
 There is two aggretion strategies: strict and forgiving. The strict one will always aggregate to the worst status:
