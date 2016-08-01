@@ -2,14 +2,14 @@
 
 A simple library that can be used to hierarchically aggretate status of different sources and subsources. A valid status consists of at least this info:
 
-```
+```edn
 {:id-of-source {:status :ok :message "a message"}}
 ```
-with status beeing one of `[:ok :warning :error]`. The inner map can contain arbitrary addidtional information.
+with status beeing one of ```[:ok :warning :error]```. The inner map can contain arbitrary addidtional information.
 
 ## Usage
 
-Add `[de.otto/status "0.1.0"]` to your project dependencies. See example usage below.
+Add ```[de.otto/status "0.1.0"]``` to your project dependencies. See example usage below.
 
 ## Example
 
@@ -18,7 +18,7 @@ To try this example, start a repl with
 ```$ lein repl```
 
 and do something like this
-```
+```clj
 (use 'de.otto.status)
 
 ;; you'll need some functions that return status in the given format.
@@ -32,7 +32,7 @@ and do something like this
 
 There is two aggretion strategies: strict and forgiving. The strict one will always aggregate to the worst status:
 
-```
+```clj
 (aggregate-status :app-id strict-strategy [fun1 fun2])
 ;; results in
 {:app-id
@@ -44,7 +44,7 @@ There is two aggretion strategies: strict and forgiving. The strict one will alw
 ```
 
 The forgiving strategy on the other hand will be fine if at least one substatus is ok.
-```
+```clj
 (aggregate-status :app-id forgiving-strategy [fun1 fun2])
 ;; results in
 {:app-id
@@ -58,7 +58,7 @@ The forgiving strategy on the other hand will be fine if at least one substatus 
 
 Note, that the resulting statuses could be aggregated again. Additional info can be added like this:
 
-```
+```clj
 (aggregate-status :app-id strict-strategy [fun1] {:key "value"})
 ;; results in
 {:app-id
