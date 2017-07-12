@@ -5,7 +5,7 @@ A simple library that can be used to hierarchically aggretate status of differen
 ```edn
 {:id-of-source {:status :ok :message "a message"}}
 ```
-with status beeing one of ```[:ok :warning :error]```. The inner map can contain arbitrary addidtional information.
+with status beeing one of ```[:ok :warning :error :timeout]```. The inner map can contain arbitrary addidtional information.
 
 ## Usage
 
