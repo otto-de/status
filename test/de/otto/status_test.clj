@@ -8,11 +8,11 @@
 (def f-warn #(s/status-detail :warn-subcomponent :warning "a warning"))
 (def f-error #(s/status-detail :error-subcomponent :error "an error"))
 
-(def forgiving-msgs {:ok      "at least one substatus ok"
-                     :error   "no substatus ok"})
-(def strict-msgs    {:ok      "all substatus ok"
-                     :warning "at least one substatus warn. no error"
-                     :error   "at least one substatus error"})
+(def forgiving-msgs {:ok    "at least one substatus ok"
+                     :error "no substatus ok"})
+(def strict-msgs {:ok      "all substatus ok"
+                  :warning "at least one substatus warn. no error"
+                  :error   "at least one substatus error"})
 
 (deftest create-a-forgiving-aggregate-status
   (testing "ok if all ok"
@@ -76,4 +76,27 @@
                  :message       "at least one ok"
                  :extra-key     "extra-value"
                  :statusDetails (f-ok)}}
-           (s/aggregate-status :id s/forgiving-strategy [f-ok] {:extra-key "extra-value"})))))
+           (s/aggregate-status :id s/forgiving-strategy [f-ok] {:extra-key "extra-value"}))))
+
+  (testing "it returns a timeout status for status functions which did not finish fast enough"
+    (let [ok-st-result ["myname" {:status :ok :message ""}]
+          ok-st-fn (constantly ok-st-result)
+          timeout-result ["myname" {:status :ok :message "SpCial"}]
+          timeout-st-fn #(do (Thread/sleep 10) timeout-result)
+          aggregated-status (get-in (s/aggregate-status :id s/forgiving-strategy [ok-st-fn timeout-st-fn] {} 5)
+                        [:id :statusDetails])]
+      (is (some #{:ok} (map :status (vals aggregated-status))))
+      (is (some #{:timeout} (map :status (vals aggregated-status)))))))
+
+(deftest timeouts-or-results-test
+  (let [ok-st-result ["myname" {:status :ok :message ""}]
+        ok-st-fn (constantly ok-st-result)
+        timeout-result ["myname" {:status :ok :message "SpCial"}]
+        timeout-st-fn #(do (Thread/sleep 10) timeout-result)]
+    (testing "should return the result if status function finished in time"
+      (is (= ok-st-result
+             (s/result-or-timeout 100 ["ok-st-fn" (future (ok-st-fn))]))))
+
+    (testing "should return a timeout result if status function did not finish in time"
+      (is (= :timeout
+             (:status (second (s/result-or-timeout 5 ["ok-st-fn" (future (timeout-st-fn))]))))))))
